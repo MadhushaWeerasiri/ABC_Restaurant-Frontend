@@ -8,27 +8,29 @@ import Axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 export default function Cart() {
-    let userId = "";
     let navigate = useNavigate();
-
-    useEffect(() => {
-        const userId = sessionStorage.getItem('userId');
-        const userRole = sessionStorage.getItem('userRole');
-        if (!userId || userRole !== '3') {
-            navigate('/login');
-        }
-    }, [navigate]);
-
+    const [userId, setUserId] = useState('');
     const [cartItems, setCartItems] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
     useEffect(() => {
+        const storedUserId = sessionStorage.getItem('userId');
+        const userRole = sessionStorage.getItem('userRole');
+        if (!storedUserId || userRole !== '3') {
+            navigate('/login');
+        } else {
+            setUserId(storedUserId);
+        }
+    }, [navigate]);
+
+    useEffect(() => {
         const fetchData = async () => {
+            if (!userId) return;
+
             try {
                 const result = await Axios.get(`${process.env.REACT_APP_ENDPOINT}/api/cart/byCustomer/${userId}`);
                 setCartItems(result.data);
-                // console.log(result.data);
             } catch (err) {
                 setError("Failed to load cart.");
             } finally {

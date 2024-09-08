@@ -166,7 +166,7 @@ export default function LogIn() {
                             onChange={handleChange}
                         />
                         {loading ? (
-                            <CircularProgress sx={{ mt: 3, mb: 2, color: '#fe9e0d' }} />
+                            <CircularProgress sx={{ mt: 3, mb: 2, color: '#fe9e0d', textAlign: 'center' }} />
                         ) : (
                             <Button
                                 type="submit"
