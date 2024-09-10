@@ -130,7 +130,7 @@ export default function Products() {
                                     </Typography>
                                     <Box sx={box2Style}>
                                         {categoryProducts.map((product) => (
-                                            <Card key={product.id} product={product} />
+                                            <Card key={product.productId} product={product} />
                                         ))}
                                     </Box>
                                 </Box>

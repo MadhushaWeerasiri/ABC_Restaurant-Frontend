@@ -1,22 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import AppBar from "../AppBar";
+import BottomNav from "../BottomNav";
 import { Box, Typography, Button, TextField, Container, Alert, Stack, CircularProgress } from "@mui/material";
 import Grid2 from "@mui/material/Unstable_Grid2/Grid2";
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import Axios from "axios";
 
 export default function ChangePassword() {
-    let userId = "";
-    let navigate = useNavigate();
-
-    useEffect(() => {
-        const userId = sessionStorage.getItem('userId');
-        const userRole = sessionStorage.getItem('userRole');
-        if (!userId || userRole !== '3') {
-            navigate('/login');
-        }
-    }, [navigate]);
-
+    const [userId, setUserId] = useState('');
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [details, setDetails] = useState({
@@ -34,10 +26,24 @@ export default function ChangePassword() {
     });
     const [alert, setAlert] = useState({ show: false, type: '', message: '' });
     const [passwordsMatch, setPasswordsMatch] = useState(true);
+    const [formLoading, setFormLoading] = useState(false);
+    const navigate = useNavigate();
 
     useEffect(() => {
-        loadPassword();
-    }, []);
+        const storedUserId = sessionStorage.getItem('userId');
+        const userRole = sessionStorage.getItem('userRole');
+        if (!storedUserId || userRole !== '3') {
+            navigate('/login');
+        } else {
+            setUserId(storedUserId);
+        }
+    }, [navigate]);
+
+    useEffect(() => {
+        if (userId) {
+            loadPassword();
+        }
+    }, [userId]);
 
     useEffect(() => {
         setPasswordsMatch(newPassword.newPassword === newPassword.confirmNewPassword);
@@ -49,7 +55,7 @@ export default function ChangePassword() {
             setDetails(result.data);
         } catch (error) {
             console.error("Error loading user data:", error);
-            setError(error);
+            setError(error.message || "An error occurred");
         } finally {
             setLoading(false);
         }
@@ -57,8 +63,8 @@ export default function ChangePassword() {
 
     const handleChange = (event) => {
         const { name, value } = event.target;
-        setNewPassword((prevNewPassword) => ({
-            ...prevNewPassword,
+        setNewPassword((prev) => ({
+            ...prev,
             [name]: value,
         }));
     };
@@ -78,8 +84,9 @@ export default function ChangePassword() {
             setAlert({ show: true, type: 'error', message: 'New passwords do not match' });
             return;
         }
+
         if (details.password === newPassword.currentPassword) {
-            setLoading(true);
+            setFormLoading(true);
             try {
                 const response = await Axios.put(`${process.env.REACT_APP_ENDPOINT}/api/user/${userId}/password`, {
                     newPassword: newPassword.newPassword,
@@ -87,7 +94,6 @@ export default function ChangePassword() {
                 if (response.status === 200) {
                     setAlert({ show: true, type: 'success', message: 'Password changed successfully' });
                     clearFields();
-                    setLoading(false);
                     setTimeout(() => navigate("/admin/profile"), 2000);
                 } else {
                     setAlert({ show: true, type: 'error', message: 'Failed to update password' });
@@ -97,14 +103,13 @@ export default function ChangePassword() {
                 setAlert({ show: true, type: 'error', message: 'Error changing password' });
                 clearFields();
             } finally {
-                setLoading(false);
+                setFormLoading(false);
             }
         } else {
             setAlert({ show: true, type: 'error', message: 'Current password is incorrect' });
             clearFields();
         }
     };
-
 
     const textboxStyle = {
         input: { color: 'white' },
@@ -134,118 +139,120 @@ export default function ChangePassword() {
 
     return (
         <Grid2 sx={{ minWidth: '800px' }}>
-            <Box component="main" sx={{ padding: '30px 40px', marginLeft: '240px' }}>
-                <Box sx={{ marginTop: 'auto' }}>
-                    <Button
-                        variant="contained"
+            <AppBar sx={{ display: 'fixed' }} />
+            <Box sx={{ margin: '20px' }}>
+                <Button
+                    variant="contained"
+                    sx={{
+                        backgroundColor: 'white',
+                        color: '#fe9e0d',
+                        borderRadius: '10px',
+                        ':hover': {
+                            bgcolor: '#fe9e0d',
+                            color: 'white',
+                        },
+                    }}
+                    startIcon={<ArrowBackIosIcon />}
+                    onClick={() => navigate("/user/profile")}
+                >
+                    Back
+                </Button>
+                {loading ? (
+                    <Box
                         sx={{
-                            backgroundColor: 'white',
-                            color: '#fe9e0d',
-                            borderRadius: '10px',
-                            ':hover': {
-                                bgcolor: '#fe9e0d',
-                                color: 'white',
-                            },
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            height: '90vh',
                         }}
-                        startIcon={<ArrowBackIosIcon />}
-                        onClick={() => navigate("/admin/profile")}
                     >
-                        Back
-                    </Button>
-                    {loading ? (
-                        <Box
+                        <CircularProgress
+                            size={70}
+                            thickness={4}
                             sx={{
-                                display: 'flex',
-                                justifyContent: 'center',
-                                alignItems: 'center',
-                                height: '90vh',
+                                color: '#fe9e0d',
+                            }}
+                        />
+                    </Box>
+                ) : (
+                    <Container component="main" maxWidth="xs">
+                        <Typography
+                            component="h1"
+                            variant="h4"
+                            sx={{
+                                textAlign: 'center',
+                                mt: '50px',
+                                mb: '30px',
+                                fontWeight: 'bold',
+                                textDecoration: 'underline',
                             }}
                         >
-                            <CircularProgress
-                                size={70}
-                                thickness={4}
-                                sx={{
-                                    color: '#fe9e0d',
-                                }}
+                            Change Password
+                        </Typography>
+                        {alert.show && (
+                            <Stack sx={{ width: '100%', mb: 2 }} spacing={2}>
+                                <Alert severity={alert.type}>{alert.message}</Alert>
+                            </Stack>
+                        )}
+                        <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
+                            <TextField
+                                margin="normal"
+                                required
+                                fullWidth
+                                type="password"
+                                id="currentPassword"
+                                label="Current Password"
+                                name="currentPassword"
+                                autoComplete="current-password"
+                                sx={textboxStyle}
+                                value={newPassword.currentPassword}
+                                onChange={handleChange}
+                                disabled={formLoading}
                             />
-                        </Box>
-                    ) : (
-                        <Container component="main" maxWidth="xs">
-                            <Typography
-                                component="h1"
-                                variant="h4"
-                                sx={{
-                                    textAlign: 'center',
-                                    mt: '50px',
-                                    mb: '30px',
-                                    fontWeight: 'bold',
-                                    textDecoration: 'underline',
-                                }}
+                            <TextField
+                                margin="normal"
+                                required
+                                fullWidth
+                                type="password"
+                                id="newPassword"
+                                label="New Password"
+                                name="newPassword"
+                                autoComplete="new-password"
+                                sx={textboxStyle}
+                                value={newPassword.newPassword}
+                                onChange={handleChange}
+                                disabled={formLoading}
+                            />
+                            <TextField
+                                margin="normal"
+                                required
+                                fullWidth
+                                type="password"
+                                id="confirmNewPassword"
+                                label="Confirm New Password"
+                                name="confirmNewPassword"
+                                autoComplete="new-password"
+                                sx={textboxStyle}
+                                value={newPassword.confirmNewPassword}
+                                onChange={handleChange}
+                                error={!passwordsMatch && newPassword.confirmNewPassword !== ''}
+                                helperText={!passwordsMatch && newPassword.confirmNewPassword !== '' ? "Passwords don't match" : ''}
+                                disabled={formLoading}
+                            />
+                            <Button
+                                type="submit"
+                                fullWidth
+                                variant="contained"
+                                sx={buttonStyle}
+                                disabled={!passwordsMatch || formLoading}
                             >
-                                Change Password
-                            </Typography>
-                            {alert.show && (
-                                <Stack sx={{ width: '100%', mb: 2 }} spacing={2}>
-                                    <Alert severity={alert.type}>{alert.message}</Alert>
-                                </Stack>
-                            )}
-                            <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
-                                <TextField
-                                    margin="normal"
-                                    required
-                                    fullWidth
-                                    autoFocus
-                                    type="password"
-                                    id="currentPassword"
-                                    label="Current Password"
-                                    name="currentPassword"
-                                    autoComplete="current-password"
-                                    sx={textboxStyle}
-                                    value={newPassword.currentPassword}
-                                    onChange={handleChange}
-                                />
-                                <TextField
-                                    margin="normal"
-                                    required
-                                    fullWidth
-                                    type="password"
-                                    id="newPassword"
-                                    label="New Password"
-                                    name="newPassword"
-                                    autoComplete="new-password"
-                                    sx={textboxStyle}
-                                    value={newPassword.newPassword}
-                                    onChange={handleChange}
-                                />
-                                <TextField
-                                    margin="normal"
-                                    required
-                                    fullWidth
-                                    type="password"
-                                    id="confirmNewPassword"
-                                    label="Confirm New Password"
-                                    name="confirmNewPassword"
-                                    autoComplete="new-password"
-                                    sx={textboxStyle}
-                                    value={newPassword.confirmNewPassword}
-                                    onChange={handleChange}
-                                    error={!passwordsMatch && newPassword.confirmNewPassword !== ''}
-                                    helperText={!passwordsMatch && newPassword.confirmNewPassword !== '' ? "Passwords don't match" : ''}
-                                />
-                                <Button
-                                    type="submit"
-                                    fullWidth
-                                    variant="contained"
-                                    sx={buttonStyle}
-                                    disabled={!passwordsMatch}
-                                >
-                                    Change
-                                </Button>
-                            </Box>
-                        </Container>
-                    )};
-                </Box>
+                                {formLoading ? "Changing..." : "Change"}
+                            </Button>
+                        </Box>
+                    </Container>
+                )}
             </Box>
+            <BottomNav />
         </Grid2>
     );
 }

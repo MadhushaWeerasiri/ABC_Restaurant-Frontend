@@ -8,20 +8,10 @@ import { DatePicker, LocalizationProvider, TimePicker } from "@mui/x-date-picker
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs from 'dayjs';
-
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 
 export default function Checkout() {
-    let userId = "";
-    let navigate = useNavigate();
-
-    useEffect(() => {
-        const userId = sessionStorage.getItem('userId');
-        const userRole = sessionStorage.getItem('userRole');
-        if (!userId || userRole !== '3') {
-            navigate('/login');
-        }
-    }, [navigate]);
-    
+    const [userId, setUserId] = useState('');
     const [userDetails, setUserDetails] = useState({});
     const [cartItems, setCartItems] = useState([]);
     const [productDetailsMap, setProductDetailsMap] = useState({});
@@ -38,12 +28,57 @@ export default function Checkout() {
         reservationType: "",
         reservationDate: dayjs(),
         reservationTime: dayjs(),
+        reservationAddress: "",
         reservationNote: "",
         reservationLocation: "",
         reservationPlacedTime: "",
         reservationTotal: 0,
         reservationStatus: "",
     });
+
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        const storedUserId = sessionStorage.getItem('userId');
+        const userRole = sessionStorage.getItem('userRole');
+        if (!storedUserId || userRole !== '3') {
+            navigate('/login');
+        } else {
+            setUserId(storedUserId);
+        }
+    }, [navigate]);
+
+    useEffect(() => {
+        if (userId) {
+            loadUserDetails();
+            loadCart();
+            loadFacilities();
+            loadRestaurants();
+        }
+    }, [userId]);
+
+    useEffect(() => {
+        if (cartItems.length > 0) {
+            cartItems.forEach(cartItem => {
+                if (!productDetailsMap[cartItem.productId]) {
+                    loadProductDetails(cartItem.productId);
+                }
+            });
+        }
+    }, [cartItems, productDetailsMap]);
+
+    useEffect(() => {
+        let totalAmount = 0;
+        cartItems.forEach(cartItem => {
+            const product = productDetailsMap[cartItem.productId];
+            if (product) {
+                totalAmount += cartItem.productQuantity * product.productPrice;
+            }
+        });
+        setTotal(totalAmount);
+        console.log(total)
+        setOrderDetails(prev => ({ ...prev, reservationTotal: totalAmount }));
+    }, [cartItems, productDetailsMap]);
 
     const loadUserDetails = async () => {
         try {
@@ -70,7 +105,7 @@ export default function Checkout() {
     const loadProductDetails = async (productId) => {
         try {
             const result = await Axios.get(`${process.env.REACT_APP_ENDPOINT}/api/product/${productId}`);
-            setProductDetailsMap((prev) => ({ ...prev, [productId]: result.data }));
+            setProductDetailsMap(prev => ({ ...prev, [productId]: result.data }));
         } catch (err) {
             console.error("Error loading product details:", err);
             setError("Failed to load product details.");
@@ -99,14 +134,14 @@ export default function Checkout() {
 
     const handleChange = (event) => {
         const { name, value } = event.target;
-        setOrderDetails((prevOrderDetails) => ({
+        setOrderDetails(prevOrderDetails => ({
             ...prevOrderDetails,
             [name]: value,
         }));
     };
 
     const handleDateChange = (name, value) => {
-        setOrderDetails((prevOrderDetails) => ({
+        setOrderDetails(prevOrderDetails => ({
             ...prevOrderDetails,
             [name]: value,
         }));
@@ -123,6 +158,7 @@ export default function Checkout() {
             reservationType: selectedMethod,
             reservationDate: orderDetails.reservationDate,
             reservationTime: orderDetails.reservationTime,
+            reservationAddress: selectedMethod === '3' ? orderDetails.reservationAddress : userDetails.address,
             reservationNote: orderDetails.reservationNote || "",
             reservationLocation: orderDetails.reservationLocation,
             reservationPlacedTime: new Date().toISOString(),
@@ -131,13 +167,15 @@ export default function Checkout() {
         };
     
         try {
+            console.log(updatedOrderDetails);
             await Axios.post(`${process.env.REACT_APP_ENDPOINT}/api/reservation/addReservation`, updatedOrderDetails);
+            
             await deleteFromCartCollection();
         } catch (err) {
             console.error("Error placing order:", err);
             setError("Failed to place the order.");
         }
-    };
+    };      
 
     const deleteFromCartCollection = async () => {
         try {
@@ -152,38 +190,10 @@ export default function Checkout() {
             setError("Failed to delete items from cart.");
         }
     };
-    
+
     const handleMethodChange = (e) => {
         setSelectedMethod(e.target.value);
     };
-
-    useEffect(() => {
-        loadUserDetails();
-        loadCart();
-        loadFacilities();
-        loadRestaurants();
-    }, []);
-
-    useEffect(() => {
-        if (cartItems.length > 0) {
-            cartItems.forEach(cartItem => {
-                if (!productDetailsMap[cartItem.productId]) {
-                    loadProductDetails(cartItem.productId);
-                }
-            });
-        }
-    }, [cartItems, productDetailsMap]);
-
-    useEffect(() => {
-        let totalAmount = 0;
-        cartItems.forEach(cartItem => {
-            const product = productDetailsMap[cartItem.productId];
-            if (product) {
-                totalAmount += cartItem.productQuantity * product.productPrice;
-            }
-        });
-        setTotal(totalAmount);
-    }, [cartItems, productDetailsMap]);
 
     const buttonStyle = {
         mt: '30px',
@@ -269,6 +279,29 @@ export default function Checkout() {
     return (
         <Box>
             <AppBar />
+            <Box
+                sx={{
+                    margin: '20px'
+                }}
+            >
+                <Button
+                    variant="contained"
+                    sx={{
+                        backgroundColor: 'white',
+                        color: '#fe9e0d',
+                        borderRadius: '10px',
+                        ':hover': {
+                            bgcolor: '#fe9e0d',
+                            color: 'white',
+                        },
+                    }}
+                    startIcon={<ArrowBackIosIcon />}
+                    onClick={() => navigate("/user/cart")}
+                >
+                    Back
+                </Button>
+            </Box>
+
             <Typography
                 variant="h4"
                 sx={{
@@ -300,7 +333,7 @@ export default function Checkout() {
             </Box>
             <Container
                 component="main"
-                maxWidth="xs"
+                maxWidth="sm"
             >
                 <Box
                     component="form"
@@ -316,6 +349,15 @@ export default function Checkout() {
                     >
                         <InputLabel id="location-label">Restaurant</InputLabel>
                         <Select
+                            MenuProps={{
+                                sx: {
+                                    "&& .Mui-selected": {
+                                        color: "white",
+                                        background: "#fe9e0d",
+                                    },
+                                },
+                            }}
+                            sx={{ color: 'white'}}
                             labelId="location-label"
                             id="reservationLocation"
                             value={orderDetails.reservationLocation}
@@ -336,6 +378,15 @@ export default function Checkout() {
                     >
                         <InputLabel id="method-label">Method</InputLabel>
                         <Select
+                            MenuProps={{
+                                sx: {
+                                    "&& .Mui-selected": {
+                                        color: "white",
+                                        background: "#fe9e0d",
+                                    },
+                                },
+                            }}
+                            sx={{ color: 'white'}}
                             labelId="method-label"
                             id="reservationMethod"
                             value={selectedMethod}
@@ -361,30 +412,39 @@ export default function Checkout() {
                             multiline
                             rows={3}
                             sx={textboxStyle}
-                            // value={orderDetails.reservationAddress || ""}
+                            inputProps={{ style: { color: "white" } }}
+                            value={userDetails.address || ""}
                             onChange={handleChange}
                         />
                     )}
-                    <LocalizationProvider dateAdapter={AdapterDayjs}>
-                        <DemoContainer components={['DatePicker']}>
-                            <DatePicker
-                                label="Date"
-                                value={orderDetails.reservationDate}
-                                onChange={(newValue) => handleDateChange("reservationDate", newValue)}
-                                sx={datePicker}
-                            />
-                        </DemoContainer>
-                    </LocalizationProvider>
-                    <LocalizationProvider dateAdapter={AdapterDayjs}>
-                        <DemoContainer components={['TimePicker']}>
-                            <TimePicker
-                                label="Time"
-                                value={orderDetails.reservationTime}
-                                onChange={(newValue) => handleDateChange("reservationTime", newValue)}
-                                sx={datePicker}
-                            />
-                        </DemoContainer>
-                    </LocalizationProvider>
+                    <Box
+                        sx={{
+                            display: 'flex',
+                            justifyContent: 'space-between'
+                        }}
+                    >
+                        <LocalizationProvider dateAdapter={AdapterDayjs}>
+                            <DemoContainer components={['DatePicker']}>
+                                <DatePicker
+                                    label="Date"
+                                    value={orderDetails.reservationDate}
+                                    onChange={(newValue) => handleDateChange("reservationDate", newValue)}
+                                    sx={datePicker}
+                                />
+                            </DemoContainer>
+                        </LocalizationProvider>
+                        <LocalizationProvider dateAdapter={AdapterDayjs}>
+                            <DemoContainer components={['TimePicker']}>
+                                <TimePicker
+                                    label="Time"
+                                    value={orderDetails.reservationTime}
+                                    onChange={(newValue) => handleDateChange("reservationTime", newValue)}
+                                    sx={datePicker}
+                                />
+                            </DemoContainer>
+                        </LocalizationProvider>
+                    </Box>
+
                 </Box>
             </Container>
             <Box>

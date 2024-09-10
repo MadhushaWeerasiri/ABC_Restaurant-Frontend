@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import AppBar from "../AppBar";
-import BottomNav from "../BottomNav"
+import BottomNav from "../BottomNav";
 import { Box, Typography, CircularProgress } from "@mui/material";
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
@@ -8,25 +8,24 @@ import Axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 export default function Profile() {
-    let userId = "";
-    let navigate = useNavigate();
-
-    useEffect(() => {
-        const userId = sessionStorage.getItem('userId');
-        const userRole = sessionStorage.getItem('userRole');
-        if (!userId || userRole !== '3') {
-            navigate('/login');
-        }
-    }, [navigate]);
-    
-
     const [form, setForm] = useState({});
     const [role, setRole] = useState('');
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const navigate = useNavigate();
+    const userId = sessionStorage.getItem('userId');
 
     useEffect(() => {
-        loadProfile();
+        const userRole = sessionStorage.getItem('userRole');
+        if (!userId || userRole !== '3') {
+            navigate('/login');
+        }
+    }, [navigate, userId]);
+
+    useEffect(() => {
+        if (userId) {
+            loadProfile();
+        }
     }, [userId]);
 
     useEffect(() => {
@@ -41,7 +40,7 @@ export default function Profile() {
             setForm(result.data);
         } catch (error) {
             console.error("Error loading user data:", error);
-            setError(error);
+            setError(error?.response?.data?.message || error.message || "An error occurred");
         } finally {
             setLoading(false);
         }
@@ -54,11 +53,11 @@ export default function Profile() {
             setRole(result.data);
         } catch (error) {
             console.error("Error loading role data:", error);
-            setError(error);
+            setError(error?.response?.data?.message || error.message || "An error occurred");
         } finally {
             setLoading(false);
         }
-    }
+    };
 
     const buttonStyle = {
         width: '250px',
@@ -66,7 +65,7 @@ export default function Profile() {
         color: 'white',
         background: '#fe9e0d',
         ':hover': {
-            bgcolor: ' #cb7a01',
+            bgcolor: '#cb7a01',
             color: 'white',
         },
     };
@@ -230,7 +229,7 @@ export default function Profile() {
                                         sx={buttonStyle}
                                         onClick={() => navigate('/user/changePassword')}
                                     >
-                                        change password
+                                        Change Password
                                     </Button>
                                 </Box>
                             </Box>
@@ -240,5 +239,5 @@ export default function Profile() {
             </Box>
             <BottomNav />
         </Box>
-    )
+    );
 }
