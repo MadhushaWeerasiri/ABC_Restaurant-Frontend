@@ -193,7 +193,7 @@ export default function LogIn() {
                         )}
                         <Grid container>
                             <Grid item xs>
-                                <Link
+                                {/* <Link
                                     href="#"
                                     variant="body2"
                                     sx={{
@@ -202,9 +202,10 @@ export default function LogIn() {
                                         fontWeight: 'bold',
                                         userSelect: 'none',
                                     }}
+                                    
                                 >
                                     Forgot password?
-                                </Link>
+                                </Link> */}
                             </Grid>
                             <Grid item>
                                 <Typography
