@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import AppBar from "../AppBar";
+import BottomNav from "../BottomNav";
 import { Box, Typography, CircularProgress } from "@mui/material";
 import Grid2 from "@mui/material/Unstable_Grid2/Grid2";
 import Button from '@mui/material/Button';
@@ -9,19 +11,25 @@ import Axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 export default function EditDetails() {
-    let userId = "";
+    const [userId, setUserId] = useState('');
     let navigate = useNavigate();
 
     useEffect(() => {
-        const userId = sessionStorage.getItem('userId');
+        const storedUserId = sessionStorage.getItem('userId');
         const userRole = sessionStorage.getItem('userRole');
-        if (!userId || userRole !== '3') {
+        if (!storedUserId || userRole !== '3') {
             navigate('/login');
+        } else {
+            setUserId(storedUserId);
         }
     }, [navigate]);
-    
 
-    // const [role, setRole] = useState('');
+    useEffect(() => {
+        if (userId) {
+            loadProfile();
+        }
+    }, [userId]);
+    
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
@@ -31,10 +39,6 @@ export default function EditDetails() {
         address: "",
         email: "",
     });
-
-    useEffect(() => {
-        loadProfile();
-    }, []);
 
     const loadProfile = async () => {
         try {
@@ -107,13 +111,8 @@ export default function EditDetails() {
                 minWidth: '800px',
             }}
         >
-            <Box
-                component="main"
-                sx={{
-                    padding: '30px 40px',
-                    marginLeft: '240px',
-                }}
-            >
+            <AppBar sx={{ display: 'fixed' }} />
+            <Box sx={{ margin: '20px' }}>
                 <Box
                     sx={{ marginTop: 'auto' }}
                 >
@@ -129,7 +128,7 @@ export default function EditDetails() {
                             },
                         }}
                         startIcon={<ArrowBackIosIcon />}
-                        onClick={() => navigate("/admin/profile")}
+                        onClick={() => navigate("/user/profile")}
                     >
                         Back
                     </Button>
@@ -160,7 +159,7 @@ export default function EditDetails() {
                                 color: 'red',
                             }}
                         >
-                            {error}
+                            {error.message || "An error occurred"}
                         </Typography>
                     ) :(
                         <Container
@@ -248,6 +247,7 @@ export default function EditDetails() {
                     )}
                 </Box>
             </Box>
+            <BottomNav />
         </Grid2>
     )
 }

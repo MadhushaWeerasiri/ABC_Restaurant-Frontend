@@ -154,14 +154,14 @@ export default function ProductCategory() {
                                             >
                                                 Category Description
                                             </TableCell>
-                                            <TableCell
+                                            {/* <TableCell
                                                 align="center"
                                                 sx={{
                                                     backgroundColor: '#cccccc',
                                                 }}
                                             >
                                                 Category Image
-                                            </TableCell>
+                                            </TableCell> */}
                                             <TableCell
                                                 align="center"
                                                 sx={{
@@ -178,7 +178,7 @@ export default function ProductCategory() {
                                                 <TableCell align="center" component="th" scope="row">{category.categoryId}</TableCell>
                                                 <TableCell align="center">{category.categoryName}</TableCell>
                                                 <TableCell align="center">{category.categoryDescription}</TableCell>
-                                                <TableCell align="center">{category.categoryImage}</TableCell>
+                                                {/* <TableCell align="center">{category.categoryImage}</TableCell> */}
                                                 <TableCell align="center">
                                                     <IconButton
                                                         onClick={() => navigate('/admin/editProductCategory', { state: { id: category.id } })}

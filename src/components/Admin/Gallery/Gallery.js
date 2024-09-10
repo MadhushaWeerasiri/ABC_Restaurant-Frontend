@@ -87,6 +87,7 @@ export default function ProductCategory() {
                                 color: 'white',
                             },
                         }}
+                        disabled
                     >
                         Add new Image
                     </Button>

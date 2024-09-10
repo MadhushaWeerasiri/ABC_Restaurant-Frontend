@@ -326,6 +326,7 @@ export default function AddOffer() {
                                     component="label"
                                     sx={fileUploadBtn}
                                     startIcon={<CloudUploadIcon />}
+                                    disabled
                                 >
                                     Upload Image
                                     <VisuallyHiddenInput

@@ -218,7 +218,7 @@ export default function Profile() {
                                         type="submit"
                                         variant="contained"
                                         sx={buttonStyle}
-                                        onClick={() => navigate('/user/editProfile')}
+                                        onClick={() => navigate('/user/editDetails')}
                                     >
                                         Edit Details
                                     </Button>

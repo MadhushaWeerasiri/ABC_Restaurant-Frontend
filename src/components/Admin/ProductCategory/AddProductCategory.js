@@ -197,6 +197,7 @@ export default function AddProductCategory() {
                                 tabIndex={-1}
                                 startIcon={<CloudUploadIcon />}
                                 sx={fileUploadBtn}
+                                disabled
                             >
                                 Upload Image
                                 <VisuallyHiddenInput type="file" accept="image/jpg, image/jpeg, image/png" />

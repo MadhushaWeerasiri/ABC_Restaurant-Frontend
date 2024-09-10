@@ -7,9 +7,17 @@ import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import Axios from "axios";
 
 export default function ChangePassword() {
-    const navigate = useNavigate();
+    const [userId, setUserId] = useState('');
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [details, setDetails] = useState({
+        firstName: "",
+        lastName: "",
+        address: "",
+        email: "",
+        password: "",
+        role: "",
+    });
     const [newPassword, setNewPassword] = useState({
         currentPassword: '',
         newPassword: '',
@@ -17,28 +25,36 @@ export default function ChangePassword() {
     });
     const [alert, setAlert] = useState({ show: false, type: '', message: '' });
     const [passwordsMatch, setPasswordsMatch] = useState(true);
+    const [formLoading, setFormLoading] = useState(false);
+    const navigate = useNavigate();
 
     useEffect(() => {
-        const userId = sessionStorage.getItem('userId');
+        const storedUserId = sessionStorage.getItem('userId');
         const userRole = sessionStorage.getItem('userRole');
-        if (!userId || userRole !== '1') {
+        if (!storedUserId || userRole !== '1') {
             navigate('/login');
         } else {
-            loadPassword(userId);
+            setUserId(storedUserId);
         }
     }, [navigate]);
+
+    useEffect(() => {
+        if (userId) {
+            loadPassword();
+        }
+    }, [userId]);
 
     useEffect(() => {
         setPasswordsMatch(newPassword.newPassword === newPassword.confirmNewPassword);
     }, [newPassword.newPassword, newPassword.confirmNewPassword]);
 
-    const loadPassword = async (userId) => {
+    const loadPassword = async () => {
         try {
             const result = await Axios.get(`${process.env.REACT_APP_ENDPOINT}/api/user/${userId}`);
-            setNewPassword(prev => ({ ...prev, currentPassword: result.data.password }));
+            setDetails(result.data);
         } catch (error) {
             console.error("Error loading user data:", error);
-            setError(error.response ? error.response.data.message : error.message);
+            setError(error.message || "An error occurred");
         } finally {
             setLoading(false);
         }
@@ -46,8 +62,8 @@ export default function ChangePassword() {
 
     const handleChange = (event) => {
         const { name, value } = event.target;
-        setNewPassword(prevNewPassword => ({
-            ...prevNewPassword,
+        setNewPassword((prev) => ({
+            ...prev,
             [name]: value,
         }));
     };
@@ -68,14 +84,8 @@ export default function ChangePassword() {
             return;
         }
 
-        const userId = sessionStorage.getItem('userId');
-        if (!userId) {
-            setAlert({ show: true, type: 'error', message: 'User not found' });
-            return;
-        }
-
-        if (newPassword.currentPassword === newPassword.currentPassword) {
-            setLoading(true);
+        if (details.password === newPassword.currentPassword) {
+            setFormLoading(true);
             try {
                 const response = await Axios.put(`${process.env.REACT_APP_ENDPOINT}/api/user/${userId}/password`, {
                     newPassword: newPassword.newPassword,
@@ -92,7 +102,7 @@ export default function ChangePassword() {
                 setAlert({ show: true, type: 'error', message: 'Error changing password' });
                 clearFields();
             } finally {
-                setLoading(false);
+                setFormLoading(false);
             }
         } else {
             setAlert({ show: true, type: 'error', message: 'Current password is incorrect' });
@@ -159,7 +169,9 @@ export default function ChangePassword() {
                             <CircularProgress
                                 size={70}
                                 thickness={4}
-                                sx={{ color: '#fe9e0d' }}
+                                sx={{
+                                    color: '#fe9e0d',
+                                }}
                             />
                         </Box>
                     ) : (
@@ -187,7 +199,6 @@ export default function ChangePassword() {
                                     margin="normal"
                                     required
                                     fullWidth
-                                    autoFocus
                                     type="password"
                                     id="currentPassword"
                                     label="Current Password"
@@ -196,6 +207,7 @@ export default function ChangePassword() {
                                     sx={textboxStyle}
                                     value={newPassword.currentPassword}
                                     onChange={handleChange}
+                                    disabled={formLoading}
                                 />
                                 <TextField
                                     margin="normal"
@@ -209,6 +221,7 @@ export default function ChangePassword() {
                                     sx={textboxStyle}
                                     value={newPassword.newPassword}
                                     onChange={handleChange}
+                                    disabled={formLoading}
                                 />
                                 <TextField
                                     margin="normal"
@@ -224,15 +237,16 @@ export default function ChangePassword() {
                                     onChange={handleChange}
                                     error={!passwordsMatch && newPassword.confirmNewPassword !== ''}
                                     helperText={!passwordsMatch && newPassword.confirmNewPassword !== '' ? "Passwords don't match" : ''}
+                                    disabled={formLoading}
                                 />
                                 <Button
                                     type="submit"
                                     fullWidth
                                     variant="contained"
                                     sx={buttonStyle}
-                                    disabled={!passwordsMatch}
+                                    disabled={!passwordsMatch || formLoading}
                                 >
-                                    Change
+                                    {formLoading ? "Changing..." : "Change"}
                                 </Button>
                             </Box>
                         </Container>

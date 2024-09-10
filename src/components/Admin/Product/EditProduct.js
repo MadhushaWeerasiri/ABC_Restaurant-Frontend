@@ -213,7 +213,7 @@ export default function AddUser() {
                             },
                         }}
                         startIcon={<ArrowBackIosIcon />}
-                        onClick={() => navigate("/admin/restaurants")}
+                        onClick={() => navigate("/admin/products")}
                     >
                         Back
                     </Button>
@@ -292,6 +292,7 @@ export default function AddUser() {
                                     tabIndex={-1}
                                     startIcon={<CloudUploadIcon />}
                                     sx={fileUploadBtn}
+                                    disabled
                                 >
                                     Upload Image
                                     <VisuallyHiddenInput type="file" accept="image/jpg, image/jpeg, image/png" style={{ display: 'none' }} />

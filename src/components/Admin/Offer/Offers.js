@@ -162,14 +162,14 @@ export default function Offer() {
                                                 >
                                                     Description
                                                 </TableCell>
-                                                <TableCell
+                                                {/* <TableCell
                                                     align="center"
                                                     sx={{
                                                         backgroundColor: '#cccccc',
                                                     }}
                                                 >
                                                     Image
-                                                </TableCell>
+                                                </TableCell> */}
                                                 <TableCell
                                                     align="center"
                                                     sx={{
@@ -234,9 +234,9 @@ export default function Offer() {
                                                     <TableCell align="center" component="th" scope="row">{offer.offerId}</TableCell>
                                                     <TableCell align="center">{offer.offerName}</TableCell>
                                                     <TableCell align="center">{offer.offerDescription}</TableCell>
-                                                    <TableCell align="center">
+                                                    {/* <TableCell align="center">
                                                         <Button variant="contained">View</Button>
-                                                    </TableCell>
+                                                    </TableCell> */}
                                                     <TableCell align="center">{offer.offerPrice}</TableCell>
                                                     <TableCell align="center">{offer.offerDiscount}</TableCell>
                                                     <TableCell align="center">{offer.offerStatus}</TableCell>

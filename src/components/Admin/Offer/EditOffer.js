@@ -346,6 +346,7 @@ export default function EditOffer() {
                                         variant="contained"
                                         sx={fileUploadBtn}
                                         startIcon={<CloudUploadIcon />}
+                                        disabled
                                     >
                                         Upload Image
                                         <VisuallyHiddenInput
