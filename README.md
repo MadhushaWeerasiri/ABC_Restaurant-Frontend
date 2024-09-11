@@ -65,7 +65,7 @@ Create a .env file in the root directory of the project to configure the followi
   ```bash
   REACT_APP_ENDPOINT=your_api_endpoint_here
   ```
-REACT_APP_ENDPOINT: The base URL of your backend API.
+- REACT_APP_ENDPOINT: The base URL of your backend API.
 
 ## Project Steucture
 ```bash
