@@ -10,7 +10,6 @@ This repository contains the frontend of the ABC Restaurant interactive web-base
 - [Environment Variables](#environment-variables)
 - [Project Structure](#project-structure)
 - [Contributing](#contributing)
-- [License](#license)
 
 ## Features
 - **Restaurant Overview**: View detailed information about the restaurant, including its services and facilities.
