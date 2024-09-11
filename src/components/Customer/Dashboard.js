@@ -2,7 +2,9 @@ import { Box, Typography } from "@mui/material";
 import React, { useEffect } from "react";
 import BottomNav from "./BottomNav"
 import AppBar from "./AppBar"
+import Products from "./Menu/Products"
 import { useNavigate } from "react-router-dom";
+
 
 export default function Dashboard() {
 
@@ -16,7 +18,7 @@ export default function Dashboard() {
             navigate('/login');
         }
     }, [navigate]);
-    
+
     const imgStyle = {
         mt: '20px',
         borderRadius: '10px',
@@ -32,20 +34,21 @@ export default function Dashboard() {
                 height: '100vh',
             }}
         >
-            <AppBar sx={{ display: 'fixed'}} />
+            <AppBar sx={{ display: 'fixed' }} />
             <Box
                 sx={{
                     padding: "3% 7%"
                 }}
             >
-                    <Typography variant="h3">
-                        Welcome
-                    </Typography>
-                    <img src="/assets/dashboard.jpeg" alt="restaurant"
-                        style={imgStyle}
-                    />
-                </Box>
-            <BottomNav/>
+                <Typography variant="h3">
+                    Welcome
+                </Typography>
+                <img src="/assets/dashboard.jpeg" alt="restaurant"
+                    style={imgStyle}
+                />
+            </Box>
+            <Products />
+            <BottomNav />
         </Box>
     )
 }

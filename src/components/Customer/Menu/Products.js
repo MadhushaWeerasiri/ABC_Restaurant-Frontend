@@ -77,7 +77,6 @@ export default function Products() {
                 height: '100vh',
             }}
         >
-            <AppBar sx={{ display: 'fixed' }} />
             <Box
                 sx={{
                     padding: "3% 7%"
@@ -149,7 +148,6 @@ export default function Products() {
                         </Typography>
                     )}
                 </Box>
-                <BottomNav />
             </Box>
         </Box>
     );

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import AppBar from "../AppBar";
-import BottomNav from "../BottomNav"
+import BottomNav from "../BottomNav";
 import Bubble from "./Bubble";
 import { Box, TextField, CircularProgress, Typography } from "@mui/material";
 import Button from '@mui/material/Button';
@@ -12,8 +12,7 @@ import axios from "axios";
 
 export default function Chat() {
 
-    let userId = "";
-    let navigate = useNavigate();
+    const navigate = useNavigate();
 
     useEffect(() => {
         const userId = sessionStorage.getItem('userId');
@@ -27,17 +26,18 @@ export default function Chat() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [newQuery, setNewQuery] = useState({
-        queryCustomer: userId,
+        queryCustomer: "",
         queryStaff: "",
         queryText: "",
         queryTime: dayjs(),
     });
 
     useEffect(() => {
+        const userId = sessionStorage.getItem('userId');
         const fetchData = async () => {
             if (userId) {
                 try {
-                    await loadChat();
+                    await loadChat(userId);
                 } catch (err) {
                     setError("Failed to load chat.");
                 } finally {
@@ -48,7 +48,7 @@ export default function Chat() {
         fetchData();
     }, []);
 
-    const loadChat = async () => {
+    const loadChat = async (userId) => {
         try {
             const response = await axios.get(`${process.env.REACT_APP_ENDPOINT}/api/query/allQueries`);
             const queries = response.data.filter(query => query.queryCustomer === userId);
@@ -69,13 +69,16 @@ export default function Chat() {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-        try {
-            console.log(newQuery)
-            await axios.post(`${process.env.REACT_APP_ENDPOINT}/api/query/addQuery`, newQuery);
-            loadChat();
-            setNewQuery({ ...newQuery, queryText: "" });
-        } catch (error) {
-            console.error(error);
+        const userId = sessionStorage.getItem('userId');
+        if (userId) {
+            try {
+                const updatedQuery = { ...newQuery, queryCustomer: userId };
+                await axios.post(`${process.env.REACT_APP_ENDPOINT}/api/query/addQuery`, updatedQuery);
+                loadChat(userId);
+                setNewQuery({ ...newQuery, queryText: "" });
+            } catch (error) {
+                console.error(error);
+            }
         }
     };
 
@@ -141,6 +144,11 @@ export default function Chat() {
                     </Box>
                 ) : (
                     <>
+                        {error && (
+                            <Typography sx={{ color: 'red', textAlign: 'center', mt: 2 }}>
+                                {error}
+                            </Typography>
+                        )}
                         <Box
                             overflow={'auto'}
                             sx={{
@@ -192,7 +200,7 @@ export default function Chat() {
                     </>
                 )}
             </Box>
-            <Typography sx={{ fontSize: '10px', color: 'red', textAlign: 'center'}}>* Please note that this is not a live chat. *</Typography>
+            <Typography sx={{ fontSize: '10px', color: 'red', textAlign: 'center' }}>* Please note that this is not a live chat. *</Typography>
             <BottomNav />
         </Box>
     );

@@ -60,7 +60,7 @@ export default function LogIn() {
                 } else if (userData.role === 2) {
                     navigate('/staff/dashboard');
                 } else {
-                    navigate('/user/dashboard');
+                    navigate('/user/menu');
                 }
             } else {
                 setAlert({ show: true, type: "error", message: "Invalid Username or Password!" });

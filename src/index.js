@@ -51,8 +51,7 @@ import StaffChat from './components/Staff/Query/Chat';
 import StaffProfile from './components/Staff/Profile/Profile'
 import StaffChangePassowrd from './components/Staff/Profile/ChangePassword'
 
-import CustomerDashboard from './components/Customer/Dashboard';
-import CustomerMenu from './components/Customer/Menu/Products';
+import CustomerMenu from './components/Customer/Dashboard';
 import CustomerOffers from './components/Customer/Offers/Offers';
 import CustomerChat from './components/Customer/Queries/Chat';
 import CustomerCart from './components/Customer/Cart/Cart';
@@ -112,7 +111,6 @@ root.render(
       <Route path='/staff/profile' element={<StaffProfile />} />
       <Route path='/staff/changePassword' element={<StaffChangePassowrd />} />
 
-      <Route path='/user/dashboard' element={<CustomerDashboard />} />
       <Route path='/user/menu' element={<CustomerMenu />} />
       <Route path='/user/offers' element={<CustomerOffers />} />
       <Route path='/user/chat' element={<CustomerChat />} />
