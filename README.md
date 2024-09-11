@@ -1,70 +1,98 @@
-# Getting Started with Create React App
+# ABC Restaurant Frontend
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This repository contains the frontend of the ABC Restaurant interactive web-based application. The application is designed to provide users with features such as browsing restaurant facilities, checking offers, making reservations, and more.
 
-## Available Scripts
+## Table of Contents
+- [Features](#features)
+- [Technologies Used](#technologies-used)
+- [Installation](#installation)
+- [Running the Application](#running-the-application)
+- [Environment Variables](#environment-variables)
+- [Project Structure](#project-structure)
+- [Contributing](#contributing)
+- [License](#license)
 
-In the project directory, you can run:
+## Features
+- **Restaurant Overview**: View detailed information about the restaurant, including its services and facilities.
+- **Offers and Promotions**: Browse and take advantage of the latest offers.
+- **Reservation System**: Make, view, and manage reservations.
+- **Customer Registration and Login**: Secure authentication and user management.
+- **Query Submission**: Submit and manage queries regarding services and other inquiries.
+- **Gallery**: Explore images of the restaurant and its ambiance.
 
-### `npm start`
+## Technologies Used
+- **React**: Frontend framework used to build the user interface.
+- **Material-UI**: React component library for faster and easier web development.
+- **Axios**: Promise-based HTTP client for the browser and Node.js.
+- **Day.js**: Lightweight library to manipulate dates.
+- **React Router**: Standard library for routing in React.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## Installation
+Follow these steps to set up and run the project locally.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+### Prerequisites
+- [Node.js](https://nodejs.org/) (v14.x or higher)
+- [npm](https://www.npmjs.com/) (v6.x or higher)
 
-### `npm test`
+### Steps
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/MadhushaWeerasiri/ABC_Restaurant-Frontend.git
+   cd ABC_Restaurant-Frontend
+2. Install the dependencies:
+   ```bash
+    npm install
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Running the Application
 
-### `npm run build`
+### Development Server
+To run the application in development mode:
+  ```bash
+  npm start
+  ```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+The app will be available at http://localhost:3000/. The page will reload automatically when you make changes to the code.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## Production Build
+To build the app for production:
+  ```bash
+npm run build
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+This will create an optimized build of the application in the build directory.
 
-### `npm run eject`
+## Environment Variables
+Create a .env file in the root directory of the project to configure the following environment variables:
+  ```bash
+  REACT_APP_ENDPOINT=your_api_endpoint_here
+  ```
+REACT_APP_ENDPOINT: The base URL of your backend API.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+## Project Steucture
+```bash
+ABC_Restaurant-Frontend/
+├── public/              # Static assets
+├── src/
+│   ├── components/      # Reusable components (e.g., AppBar, BottomNav, Bubble)
+│   ├── pages/           # Page components (e.g., Home, Menu, Offers)
+│   ├── services/        # API service files (e.g., Axios configurations)
+│   ├── App.js           # Main app component
+│   ├── index.js         # Entry point of the application
+│   └── ...              # Other utility and helper files
+├── .env                 # Environment configuration file (not included in the repo)
+├── .gitignore           # Git ignore file
+├── package.json         # NPM configuration file
+└── README.md            # Project documentation
+```
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## Contributing
+We welcome contributions to improve this project! If you'd like to contribute, please follow these steps:
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+1. Fork the repository.
+2. Create a new branch (git checkout -b feature/your-feature).
+3. Make your changes.
+4. Commit your changes (git commit -m 'Add some feature').
+5. Push to the branch (git push origin feature/your-feature).
+6. Open a pull request.
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Please ensure your code follows the project's coding standards and includes appropriate tests.
